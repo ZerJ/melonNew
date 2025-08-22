@@ -19,7 +19,7 @@ func GetTicket(c *req.Client) {
 	sellTypeCode := global.GlobalConfig.GetString("sellTypeCode")
 	scheduleNos := strings.Split(global.GlobalConfig.GetString("scheduleNo"), ",")
 	pocCode := "SC0002"
-	var key, chkcapt string
+	var WSeqkey, chkcapt string
 	// 定时开始
 	ts := global.GlobalConfig.GetString("ts")
 	if ts == "" {
@@ -38,12 +38,12 @@ func GetTicket(c *req.Client) {
 	}
 	// 2. 获取 wseq key
 	if len(keyData.NflActID) > 0 {
-		key, r, err := WSeqAuto(c, keyData.NflActID, 5)
+		WSeqkey, r, err := WSeqAuto(c, keyData.NflActID, 5)
 		if err != nil {
 			fmt.Println(err)
 		}
 		c.SetCommonCookies(&http.Cookie{Name: "NetFunnel_ID", Value: r, Domain: ".melon.com"})
-		global.GlobalConfig.Set("key", key)
+		global.GlobalConfig.Set("key", WSeqkey)
 	}
 	// 2. 获取 wseq key
 
@@ -51,7 +51,7 @@ func GetTicket(c *req.Client) {
 	//// 3. 获取验证码
 
 	for {
-		chkcapt = getCaptcha(c, prodId, pocCode, scheduleNos[0], keyData.Key, key, keyData.TrafficCtrlYn, sellTypeCode)
+		chkcapt = getCaptcha(c, prodId, pocCode, scheduleNos[0], keyData.Key, WSeqkey, keyData.TrafficCtrlYn, sellTypeCode)
 		if chkcapt == "noCheck" || chkcapt != "" {
 			break
 		}
@@ -61,17 +61,18 @@ func GetTicket(c *req.Client) {
 	//
 	// 4. 开 goroutine 抢票
 	var wg sync.WaitGroup
+	go getChkcapt(c, prodId, pocCode, scheduleNos[0], keyData.Key, sellTypeCode)
 	for _, v := range scheduleNos {
 		i := summary.InformProdSch(c, prodId, pocCode, v, sellTypeCode)
 		d, amap := summary.S1(c, prodId, pocCode, v, i.ProdInform.PerfStartDay)
 		block1, _ := summary.Summary(c, prodId, pocCode, v, i.ProdInform.PerfStartDay, d, amap)
 
 		wg.Add(1)
-		go work(c, v, chkcapt, i, key, keyData.TrafficCtrlYn, sellTypeCode, &wg, block1)
+		go work(c, v, i, sellTypeCode, block1)
 	}
 	wg.Wait()
 }
-func work(c *req.Client, scheduleNo string, chkcapt string, i model.PromReqData, key string, trafficCtrlYn string, sellTypeCode string, wg *sync.WaitGroup, block1 []model.SeatReq) {
+func work(c *req.Client, scheduleNo string, i model.PromReqData, sellTypeCode string, block1 []model.SeatReq) {
 	fmt.Println("开始处理场次:", scheduleNo)
 
 	for {
@@ -132,4 +133,25 @@ func setCookie(str string) {
 	fmt.Println(global.GlobalConfig.GetString("melonCookie"))
 
 	//return strings.Split(strings.Split(str, ":200")[1], "&nwait=")[0]
+}
+func getChkcapt(c *req.Client, prodId string, pocCode string, scheduleNo string, chk string, sellTypeCode string) {
+	for {
+
+		time.Sleep(400 * time.Second)
+		for {
+			chkcapt := getCaptcha(c, prodId, pocCode, scheduleNo, chk, "", "", sellTypeCode)
+
+			if len(chkcapt) > 0 && chkcapt != "noCheck" {
+				global.GlobalConfig.Set("chkcapt", chkcapt)
+				break
+			} else if chkcapt == "noCheck" {
+				chkcapt = "noCheck"
+				global.GlobalConfig.Set("chkcapt", chkcapt)
+				break
+			}
+			time.Sleep(20 * time.Second)
+		}
+
+	}
+
 }

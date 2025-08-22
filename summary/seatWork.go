@@ -37,7 +37,6 @@ func SeatWork(
 
 func prodLimit(c *req.Client, promReq model.PromReqData, block model.SeatReq, chk string, key string, sellTypeCode string, blocks []model.SeatReq) (r string, err error) {
 
-	fmt.Println(chk)
 	var saveData model.SaveReqData
 	var data model.ProdLimitData
 	seat, err := GetSeatList(c, block)
