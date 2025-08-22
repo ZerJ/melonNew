@@ -95,8 +95,10 @@ func Save(c *req.Client, saveReqData model.SaveReqData) (string, error) {
 			strMap[key] = values[0]
 		}
 	}
-	resp, _ := httpGet.HttpMelonQueryPost(c, "https://tkglobal.melon.com/tktapi/glb/reservation/save.json?v=1", strMap)
-
+	resp, err := httpGet.HttpMelonQueryPost(c, "https://tkglobal.melon.com/tktapi/glb/reservation/save.json?v=1", strMap)
+	if err != nil {
+		fmt.Println(err)
+	}
 	var data model.SaveHandler
 	json.Unmarshal(resp, &data)
 	//str := `{"flplanTypeCode":"DR0002","code":"0000","seatInfoListWithPriceType":"[{\"priceNo\":10067,\"seatId\":\"602_224\",\"clipSeatId\":null,\"gradeNm\":\"일반석\",\"seatNm\":\"2 층 39 구역 11 열 5 번 \",\"basePrice\":121000,\"priceName\":\"기본가\",\"sejongPriceCode\":null}]","cardCode":"FOREIGN_CHINABANK","jtype":"I","eType":"","cust_ip":"34.96.5.73","prodId":"210031","kakaoPayType":"","userName":"LIU JIAHUI","payAmt":"126000","perfMainName":"2024 RIIZE FAN－CON ‘RIIZING DAY’ FINALE in SEOUL","payNo":"2024071910731969","midOptionKey":"온라인_해외_인증_일반","staticDomain":null,"httpsDomain":null,"quota":"00","tel":"17705051327","rsrvSeq":"2024071907703891","payMethodCode":"AP0012","httpDomain":null}`
@@ -184,7 +186,7 @@ func payInitForm(c *req.Client, d model.SaveHandler, seatId string) string {
 		sessionKey := queryParams["session_key"][0]
 		logging.Info("sessionKey为" + sessionKey)
 		fmt.Println(queryParams)
-		emails("", "")
+
 		location1 := payFormFirst(sessionKey, queryParams["dkpg_payment_id"][0])
 		fmt.Println(location1)
 		location2, session := userAuthForm(location1)
@@ -269,7 +271,6 @@ func payFormFirst(sessionKey string, dkpgPaymentId string) string {
 		logging.Info(err)
 	}
 
-	defer resp.Body.Close()
 	return resp.Header.Get("location")
 
 }

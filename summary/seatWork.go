@@ -37,7 +37,7 @@ func SeatWork(
 
 func prodLimit(c *req.Client, promReq model.PromReqData, block model.SeatReq, chk string, key string, sellTypeCode string, blocks []model.SeatReq) (r string, err error) {
 
-	//fmt.Println(block)
+	fmt.Println(chk)
 	var saveData model.SaveReqData
 	var data model.ProdLimitData
 	seat, err := GetSeatList(c, block)
@@ -86,7 +86,7 @@ func prodLimit(c *req.Client, promReq model.PromReqData, block model.SeatReq, ch
 					"seatGradeNo":      block.SeatGradeNo,
 					"seatGradeName":    block.SeatGradeName,
 					"blockId":          block.BlockID,
-					"sntv":             url.QueryEscape(block.Sntv),
+					"sntv":             block.Sntv,
 					"blockTypeCode":    "",
 					"floorNo":          block.FloorNo,
 					"floorName":        block.FloorName,
@@ -105,12 +105,13 @@ func prodLimit(c *req.Client, promReq model.PromReqData, block model.SeatReq, ch
 					"zamKey":           "",
 					"trafficCtrlYn":    "N",
 					"netfunnel_key":    key,
-					"stvn_view_list":   url.QueryEscape(block.StvnViewList),
+					"stvn_view_list":   block.StvnViewList,
 					"mapClickYn":       "Y",
 					"seatId":           data.SeatIds,
 					"clipSeatId":       "",
-					"chkcapt":          url.QueryEscape(chk),
+					"chkcapt":          chk,
 				}
+
 				logging.Info(`langCd=EN&prodId=` + block.ProdID + `&pocCode=SC0002&perfTypeCode=GN0001&perfDate=` + block.PerfStartDay + `&scheduleNo=` + block.ScheduleNo + `&sellTypeCode=` + sellTypeCode + `&sellCondNo=&perfMainName=` + url.QueryEscape(promReq.ProdInform.PerfMainName) + `&seatGradeNo=` + block.SeatGradeNo + `&seatGradeName=` + block.SeatGradeName + `&blockId=` + block.BlockID + `&sntv=` + url.QueryEscape(block.Sntv) + `&blockTypeCode=&floorNo=` + block.FloorNo + `&floorName=` + url.QueryEscape(block.FloorName) + `&areaNo=` + block.AreaNo + `&areaName=` + url.QueryEscape(block.AreaName) + `&prodTypeCode=` + promReq.ProdInform.ProdTypeCode + `&flplanTypeCode=DR0002&scheduleTypeCode=SG0001&seatTypeCode=SE0001&jType=I&cardGroupId=&cardBpId=&cardMid=&rsrvStep=SAT&zamEnabled=0&zamKey=&trafficCtrlYn=N&netfunnel_key=` + url.QueryEscape(key) + `&stvn_view_list=` + url.QueryEscape(block.StvnViewList) + `&mapClickYn=Y&seatId=` + data.SeatIds + `&clipSeatId=&chkcapt=` + url.QueryEscape(chk))
 				//payload := strings.NewReader(`langCd=EN&prodId=` + block.ProdID + `&pocCode=SC0002&perfTypeCode=GN0001&perfDate=` + block.PerfStartDay + `&scheduleNo=` + block.ScheduleNo + `&sellTypeCode=` + sellTypeCode + `&sellCondNo=&perfMainName=` + url.QueryEscape(promReq.ProdInform.PerfMainName) + `&seatGradeNo=` + block.SeatGradeNo + `&seatGradeName=` + block.SeatGradeName + `&blockId=` + block.BlockID + `&sntv=` + url.QueryEscape(block.Sntv) + `&blockTypeCode=&floorNo=` + block.FloorNo + `&floorName=` + url.QueryEscape(block.FloorName) + `&areaNo=` + block.AreaNo + `&areaName=` + url.QueryEscape(block.AreaName) + `&prodTypeCode=` + promReq.ProdInform.ProdTypeCode + `&flplanTypeCode=DR0002&scheduleTypeCode=SG0001&seatTypeCode=SE0001&jType=I&cardGroupId=&cardBpId=&cardMid=&rsrvStep=SAT&zamEnabled=0&zamKey=&trafficCtrlYn=N&netfunnel_key=` + url.QueryEscape(key) + `&stvn_view_list=` + url.QueryEscape(block.StvnViewList) + `&mapClickYn=Y&seatId=` + data.SeatIds + `&clipSeatId=&chkcapt=2IxvFGPe9BHo6rNbVBSQlnc5Ib%2F4uOWjC9T7qxFbQvQ%3D`)
 				//var data1 = strings.NewReader(`langCd=EN&prodId=209657&pocCode=SC0002&perfTypeCode=GN0001&perfDate=` + block.PerfStartDay + `&scheduleNo=100001&sellTypeCode=ST0002&sellCondNo=1&perfMainName=2024+NCT+DREAM+WORLD+TOUR+%E3%80%88THE+DREAM+SHOW+3%EF%BC%9ADREAM%EF%BC%88%EF%BC%89SCAPE%E3%80%89&seatGradeNo=&seatGradeName=&blockId=` + block.BlockID + `&sntv=` + block.Sntv + `&blockTypeCode=&floorNo=&floorName=&areaNo=` + block.AreaNo + `&areaName=` + url.QueryEscape(block.AreaName) + `&prodTypeCode=PT0001&flplanTypeCode=DR0002&scheduleTypeCode=SG0001&seatTypeCode=SE0001&jType=I&cardGroupId=&cardBpId=&cardMid=&rsrvStep=SAT&zamEnabled=0&zamKey=&trafficCtrlYn=Y&netfunnel_key=%3Akey%3D14D08FDF032363695953B1EE52003A88C098D9256FBB0D122FA34A419A61B8B2C51E63206D54C1511DC43E2C33D01701664F513F0B36D2197218AEA0BFA08CCEE2FF71A65C04DA1951056A0C151271F984A5D2AAE4178E8041EE17D0C18F403253FC3C73B8D45B026BF7195A271CE63D246276E72E3A6B1A5CE877B7468289082C30%26amp%3B&stvn_view_list=%2CFLOOR+F10%3B%2CFLOOR+F11%3B%2CFLOOR+F3%3B%2CFLOOR+F4%3B%2CFLOOR+F8%3B%2CFLOOR+F9%3B%2C101%3B%2C102%3B%2C103%3B%2C104%3B%2C105%3B%2C106%3B%2C107%3B%2C108%3B%2C109%3B%2C110%3B%2C111%3B%2C112%3B%2C113%3B%2C114%3B%2C201%3B%2C202%3B%2C203%3B%2C204%3B%2C205%3B%2C206%3B%2C207%3B%2C208%3B%2C209%3B%2C210%3B%2C301%3B%2C302%3B%2C303%3B%2C304%3B%2C305%3B%2C306%3B%2C307%3B%2C308%3B%2C309%3B%2C310%3B%2C311%3B%2C312%3B%2C313%3B%2C314%3B%2C315%3B%2C316%3B%2C317%3B%2C318%3B%2C319%3B%2C320%3B%2C321%3B%2C322%3B%2C401%3B%2C402%3B%2C403%3B%2C404%3B%2C405%3B%2C406%3B%2C407%3B%2C408%3B%2C409%3B%2C410%3B%2C411%3B%2C412%3B%2C413%3B%2C414%3B%2C415%3B%2C416%3B%2C417%3B%2C418%3B%2C419%3B%2C420%3B%2C421%3B%2C422%3B%2C423%3B%2C424%3B%2CD01%3B%2CD02%3B%2CD06%3B%2CD07%3B%2CFLOOR+F1%3B%2CFLOOR+F10%3B%2CFLOOR+F11%3B%2CFLOOR+F12%3B%2CFLOOR+F13%3B%2CFLOOR+F14%3B%2CFLOOR+F15%3B%2CFLOOR+F16%3B%2CFLOOR+F2%3B%2CFLOOR+F5%3B%2CFLOOR+F6%3B%2CFLOOR+F7%3B%2CFLOOR+F8%3B%2CFLOOR+F9%3B%2CT01%3B%2CT02%3B%2CT03%3B%2CT04%3B%2CT05%3B%2CT06%3B%2CT07%3B%2CT11%3B%2CT12%3B%2CT13%3B%2CT15%3B%2CT16%3B%2CT17&mapClickYn=Y&seatId=` + data.SeatIds + `&clipSeatId=&chkcapt=` + chk)
@@ -120,6 +121,7 @@ func prodLimit(c *req.Client, promReq model.PromReqData, block model.SeatReq, ch
 				//fmt.Println(body)
 				resp, _ := httpGet.HttpMelonQueryPost(c, "https://tkglobal.melon.com/tktapi/glb/reservation/prodlimit.json?v=1", payloadMap)
 				//logging.Info(resp)
+
 				err = json.Unmarshal(resp, &data)
 				if err != nil {
 					logging.Info(payloadMap)

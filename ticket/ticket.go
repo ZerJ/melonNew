@@ -97,7 +97,7 @@ func work(c *req.Client, scheduleNo string, chkcapt string, i model.PromReqData,
 		}
 
 		if success {
-			break // 至少一次成功，退出循环
+			fmt.Println("----")
 		}
 
 		fmt.Println("本轮未成功，继续重试...")
