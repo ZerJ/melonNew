@@ -3,6 +3,7 @@ package ticket
 import (
 	"fmt"
 	"github.com/imroc/req/v3"
+	"melonNew/logging"
 	"strings"
 	"time"
 )
@@ -19,9 +20,13 @@ func WSeqAuto(client *req.Client, aid string, interval time.Duration) (finalKey 
 
 		// 如果状态不是 201，说明请求成功或者失败，不再轮询
 		if status != "201" {
+			fmt.Println("------------1---------")
+			fmt.Println(key)
 			finalKey = key
 			finalResult = result
-			break
+			fmt.Println(finalKey)
+			fmt.Println("------------2221---------")
+			return finalKey, finalResult, nil
 		}
 
 		// 状态为 201，需要等待 ttl 或者固定间隔再轮询
@@ -48,7 +53,7 @@ func WSeqUnified(client *req.Client, aid string, key string, ttl string) (status
 		cookieStr := client.Cookies
 		keyCookieT := ""
 		for _, kv := range cookieStr {
-			if kv.Name == "keyCookie_T=" {
+			if kv.Name == "keyCookie_T" {
 				keyCookieT = kv.Value
 			}
 
@@ -90,8 +95,10 @@ func WSeqUnified(client *req.Client, aid string, key string, ttl string) (status
 	if !strings.Contains(body, "NetFunnel.gControl.result=") {
 		return "", "", "", "", fmt.Errorf("unexpected response: %s", body)
 	}
-
+	fmt.Println(body)
 	keyOut = strings.Split(strings.Split(body, ":key=")[1], "&nwait")[0]
+	logging.Info(keyOut)
+	logging.Info(body)
 	result = strings.Split(strings.Split(body, "NetFunnel.gControl.result='")[1], "'; NetFunnel.gControl._showResult();")[0]
 
 	if key == "" && strings.Contains(body, "gControl.result='5002:201") {

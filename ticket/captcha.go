@@ -87,8 +87,9 @@ func getCaptcha(client *req.Client, prodId string, pocCode string, scheduleNo st
 			fmt.Println(rs)
 		}
 	}()
-	if !strings.Contains(resp.String(), "img") && strings.Contains(resp.String(), "/tktapi/glb/product/inform.json") {
 
+	if !strings.Contains(resp.String(), "img") && strings.Contains(resp.String(), "/tktapi/glb/product/inform.json") {
+		fmt.Println(resp)
 		return "noCheck"
 	}
 	if strings.Contains(resp.String(), "403") {
